@@ -137,6 +137,10 @@
             <label>Vehicle No. (Plat Nomor)</label>
             <input type="text" id="i-vehicle" value="Not Entered" oninput="updateStruk()">
         </div>
+        <div class="form-group">
+            <label>Teks Footer Pesan</label>
+            <input type="text" id="i-footer" value="TERIMA KASIH DAN SELAMAT JALAN" oninput="updateStruk()">
+        </div>
 
         <hr style="margin-top: 20px; border: 0; border-top: 1px solid #ddd;">
         
@@ -240,6 +244,9 @@
             document.getElementById('r-price').innerText = document.getElementById('i-price').value;
             document.getElementById('r-amount').innerText = document.getElementById('i-amount').value;
             document.getElementById('r-vehicle').innerText = document.getElementById('i-vehicle').value;
+            
+            // TAMBAHAN: Update text footer di preview struk
+            document.getElementById('r-footer').innerText = document.getElementById('i-footer').value;
         }
 
 
@@ -320,7 +327,8 @@
             
             receiptText += formatLine("Vehicle No.", document.getElementById('i-vehicle').value) + "\n";
             
-            receiptText += "TERIMA KASIH DAN SELAMAT JALAN\n";
+            // PERUBAHAN: Teks footer sekarang dinamis dari kolom input
+            receiptText += document.getElementById('i-footer').value + "\n";
             
             // Tambahkan baris kosong agar kertas keluar sempurna dari mesin
             receiptText += "\n\n\n";
