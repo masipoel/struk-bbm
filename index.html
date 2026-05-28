@@ -75,6 +75,7 @@
                 max-width: 54mm; /* Lebar kertas thermal disesuaikan ke 54mm */
                 margin: 0; 
                 padding: 0; 
+                padding-left: 1mm; /* TAMBAHAN: Jarak teks di sisi kiri 1mm */
                 border: none;
                 background-color: transparent;
             }
@@ -190,7 +191,9 @@
                 <span id="r-vehicle">Not Entered</span>
             </div>
             
-            <div class="mb-10" id="r-footer">TERIMA KASIH DAN SELAMAT JALAN</div>
+            <div id="r-footer">TERIMA KASIH DAN SELAMAT JALAN</div>
+            
+            <br><br> 
         </div>
     </div>
 
@@ -244,8 +247,6 @@
             document.getElementById('r-price').innerText = document.getElementById('i-price').value;
             document.getElementById('r-amount').innerText = document.getElementById('i-amount').value;
             document.getElementById('r-vehicle').innerText = document.getElementById('i-vehicle').value;
-            
-            // TAMBAHAN: Update text footer di preview struk
             document.getElementById('r-footer').innerText = document.getElementById('i-footer').value;
         }
 
@@ -257,7 +258,6 @@
             try {
                 const device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
-                    // Opsional: layanan umum printer thermal POS
                     optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '49535343-fe7d-4ae5-8fa9-9fafd205e455']
                 });
 
@@ -267,7 +267,6 @@
                 const server = await device.gatt.connect();
                 const services = await server.getPrimaryServices();
 
-                // Cari layanan yang bisa ditulisi (write)
                 for (let service of services) {
                     const characteristics = await service.getCharacteristics();
                     for (let char of characteristics) {
@@ -295,7 +294,6 @@
             }
         }
 
-        // Fungsi penyusun teks rata kanan-kiri (Lebar standar 32 karakter untuk 54-58mm)
         function formatLine(leftText, rightText) {
             let leftStr = String(leftText);
             let rightStr = String(rightText);
@@ -310,7 +308,6 @@
                 return;
             }
 
-            // Menyusun format teks murni sesuai struk
             let receiptText = "";
             receiptText += document.getElementById('i-nama').value + "\n";
             receiptText += document.getElementById('i-alamat').value + "\n\n";
@@ -327,18 +324,16 @@
             
             receiptText += formatLine("Vehicle No.", document.getElementById('i-vehicle').value) + "\n";
             
-            // PERUBAHAN: Teks footer sekarang dinamis dari kolom input
-            receiptText += document.getElementById('i-footer').value + "\n";
+            // TAMBAHAN: Teks footer ditambah 2 newline (\n\n) agar memberi jarak 2 spasi paragraf di hasil print thermal
+            receiptText += document.getElementById('i-footer').value + "\n\n\n";
             
-            // Tambahkan baris kosong agar kertas keluar sempurna dari mesin
-            receiptText += "\n\n\n";
+            // Ekstra space tambahan agar mudah dipotong dari mesin printer
+            receiptText += "\n";
 
             try {
-                // Encode teks ke format byte yang dipahami printer
                 const encoder = new TextEncoder();
                 const data = encoder.encode(receiptText);
                 
-                // Kirim perintah cetak ke mesin
                 await printCharacteristic.writeValue(data);
                 alert('Data berhasil dikirim ke printer!');
             } catch (error) {
