@@ -399,20 +399,7 @@
                 const encoder = new TextEncoder();
                 const data = encoder.encode(receiptText);
                 
-                // --- PROSES CHUNKING (MEMECAH DATA) ---
-                const CHUNK_SIZE = 50; // Ukuran aman per pengiriman untuk printer BLE
-                
-                for (let i = 0; i < data.byteLength; i += CHUNK_SIZE) {
-                    // Ambil potongan data
-                    let chunk = data.slice(i, i + CHUNK_SIZE);
-                    
-                    // Kirim potongan tersebut ke printer
-                    await printCharacteristic.writeValue(chunk);
-                    
-                    // Jeda waktu (50 milidetik) agar buffer printer tidak kelebihan beban
-                    await new Promise(resolve => setTimeout(resolve, 50)); 
-                }
-                
+                await printCharacteristic.writeValue(data);
                 alert('Data berhasil dikirim ke printer!');
             } catch (error) {
                 console.error(error);
